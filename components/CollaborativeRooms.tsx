@@ -8,6 +8,9 @@ import { RoomProvider, ClientSideSuspense } from "@liveblocks/react";
 import ActiveCollaborators from "./ActiveCollaborators";
 import { Input } from "./ui/input";
 import Image from "next/image";
+import { updateDocument } from "@/lib/actions/room.actions";
+import { Edit2Icon  } from 'lucide-react'
+import Loader from './Loader'
 
 const CollaborativeRooms = ({
   roomId,
@@ -22,18 +25,18 @@ const CollaborativeRooms = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const updateTitleHandler = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const updateTitleHandler = async (e: React.KeyboardEvent<HTMLInputElement>) => {
 
     if(e.key === 'Enter') {
       setloading(true);
 
       try {
         if(documentTitle !== roomMetadata.title) {
-          // const updatedDocument = await updateDocument(roomId, documentTitle);
+          const updatedDocument = await updateDocument(roomId, documentTitle);
           
-          // if(updatedDocument) {
-          //   setEditing(false);
-          // }
+          if(updatedDocument) {
+            setisEditing(false);
+          }
         }
       } catch (error) {
         console.error(error);
@@ -56,11 +59,17 @@ const CollaborativeRooms = ({
           document.removeEventListener('mousedown', handleClickOutside)
         }
       }
-  })
+  }, [roomId, documentTitle])
+
+  useEffect(() => {
+    if(isEditing && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isEditing])
 
   return (
     <RoomProvider id={roomId}>
-      <ClientSideSuspense fallback={<div>Loading…</div>}>
+      <ClientSideSuspense fallback={<Loader />}>
         <div className="collaborative-room">
           <Header>
             <div
@@ -87,14 +96,14 @@ const CollaborativeRooms = ({
               )}
 
               {currentUserType === "editor" && !isEditing && (
-                <Image
-                  src="/assests/icons/edit.svg"
-                  alt="edit"
-                  width={24}
-                  height={24}
-                  onClick={() => setisEditing(true)}
-                  className="pointer"
+                
+                <Edit2Icon
+                 width={20}
+                 height={20}
+                 onClick={() => setisEditing(true)}
+                 className="pointer"
                 />
+                
               )}
 
               {currentUserType!=='editor' && !isEditing && (
