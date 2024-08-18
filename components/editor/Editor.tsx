@@ -21,6 +21,7 @@ import Comments from '../Comments';
 // try to recover gracefully without losing user data.
 
 import {useThreads} from '@liveblocks/react/suspense'
+import { DeleteModal } from '../DeleteModal';
 
 function Placeholder() {
   return <div className="editor-placeholder">Enter some rich text...</div>;
@@ -46,7 +47,7 @@ export function Editor({roomId, currentUserType} : {roomId: string, currentUserT
       <div className="editor-container size-full">
       <div className="toolbar-wrapper flex min-w-full justify-between">
           <ToolbarPlugin />
-          {/* {currentUserType === 'editor' && <DeleteModal roomId={roomId} />} */}
+          {currentUserType === 'editor' && <DeleteModal roomId={roomId} />}
         </div>
 
         <div className="editor-wrapper flex flex-col items-center justify-start">
